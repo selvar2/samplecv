@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+
+# Local render artifacts (regenerate with render.sh)
+build/
+*.tmp
+
+# Scratch
+_smoke.*
+_min.*
