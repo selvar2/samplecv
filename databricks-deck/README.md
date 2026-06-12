@@ -1,14 +1,20 @@
-# Big Data & Databricks — From Fundamentals to the Lakehouse
+# Databricks Enterprise Training Series
 
-A polished, **32-slide, training-ready presentation** covering Big Data
-fundamentals, an introduction to Databricks, and Databricks architecture —
+Polished, **training-ready presentation decks** for Databricks enablement —
 built for corporate training, client demonstrations, technical workshops and
 executive reviews.
 
-The deck is generated programmatically with [`python-pptx`](https://python-pptx.readthedocs.io)
-and rendered entirely from **native PowerPoint vector shapes** (no external
-images, no emoji), so it looks identical in Microsoft PowerPoint, Google
-Slides, Keynote and LibreOffice, and every element stays fully editable.
+Each deck is generated programmatically with
+[`python-pptx`](https://python-pptx.readthedocs.io) and rendered entirely from
+**native PowerPoint vector shapes** (no external images, no emoji), so it looks
+identical in Microsoft PowerPoint, Google Slides, Keynote and LibreOffice, and
+every element stays fully editable. Both days share one design system
+(`deck_kit.py`), so they look and feel like one series.
+
+| Day | Deck | Slides | Topics |
+|-----|------|:------:|--------|
+| **Day 1** | `Big-Data-and-Databricks-Training.pptx` | 32 | Big Data Fundamentals · Introduction to Databricks · Databricks Architecture |
+| **Day 2** | `Databricks-Day2-Spark-Workspace-Lakehouse.pptx` | 34 | Apache Spark Fundamentals · Workspace Components · Lakehouse Architecture |
 
 ---
 
@@ -16,115 +22,96 @@ Slides, Keynote and LibreOffice, and every element stays fully editable.
 
 | File | What it is |
 |------|------------|
-| **`Big-Data-and-Databricks-Training.pptx`** | The presentation — 32 slides, 16:9, with detailed speaker notes on every slide. |
-| **`Big-Data-and-Databricks-Training.pdf`** | A flat PDF preview for quick viewing without PowerPoint. |
-| **`SLIDE-SPECIFICATIONS.md`** | Per-slide design document & facilitator guide (Objective · Content · Visual · Diagram · Speaker Notes · Design Tips). |
-| `build_deck.py` | The deck generator (slide content & layout). |
-| `deck_kit.py` | The reusable design system (palette, typography, shapes, vector icons). |
-| `make_specs.py` | Generates `SLIDE-SPECIFICATIONS.md`, pulling speaker notes from the deck. |
-| `render.sh` | Renders the `.pptx` → `.pdf` → per-slide PNGs for visual QA. |
+| **`Big-Data-and-Databricks-Training.pptx`** | Day 1 deck — 32 slides, 16:9, speaker notes on every slide. |
+| **`Big-Data-and-Databricks-Training.pdf`** | Day 1 flat PDF preview. |
+| **`SLIDE-SPECIFICATIONS.md`** | Day 1 per-slide design doc & facilitator guide. |
+| **`Databricks-Day2-Spark-Workspace-Lakehouse.pptx`** | Day 2 deck — 34 slides, 16:9, speaker notes on every slide. |
+| **`Databricks-Day2-Spark-Workspace-Lakehouse.pdf`** | Day 2 flat PDF preview. |
+| **`SLIDE-SPECIFICATIONS-Day2.md`** | Day 2 per-slide design doc & facilitator guide. |
+| `deck_kit.py` | Shared design system — palette, typography, shapes, vector icons, page furniture and layout composites. |
+| `build_deck.py` | Day 1 generator (also defines composites reused by Day 2). |
+| `build_deck_day2.py` | Day 2 generator (imports the shared kit + composites). |
+| `make_specs.py` / `make_specs_day2.py` | Generate the spec docs, pulling speaker notes from each deck. |
+| `render.sh` | Renders a `.pptx` → `.pdf` → per-slide PNGs for visual QA. |
 
 ---
 
-## 🗂️ Contents
+## 🗂️ Day 2 contents
 
-**Section 1 · Big Data Fundamentals**
-1. Title / Cover
-2. Your Learning Journey (Agenda)
-3. *Section 01 Divider*
-4. What Is Big Data?
-5. The Evolution of Big Data *(timeline)*
-6. The 5 V's of Big Data *(carousel)*
-7. Traditional Data vs. Big Data *(comparison table)*
-8. Big Data Challenges
-9. The Big Data Technology Landscape
-10. The Big Data Ecosystem — End to End *(pipeline)*
-11. Big Data in the Real World *(use cases)*
+**Part 1 · Apache Spark Fundamentals**
+1. Title / Cover  2. Day 2 Roadmap  3. *Part 01 Divider*
+4. What Is Apache Spark?  5. Why Spark Won  6. Spark Architecture *(Driver→…→Tasks)*
+7. Component Stack *(SQL · DataFrames · Streaming · MLlib · GraphX)*
+8. Execution Flow *(Query→DAG→Stages→Tasks→Results)*  9. Spark vs. Hadoop *(table)*
+10. Use Cases  11. Best Practices & Takeaways
 
-**Section 2 · Introduction to Databricks**
-12. *Section 02 Divider*
-13. What Is Databricks?
-14. Why Databricks? The Problem It Solves
-15. The Databricks Evolution *(timeline)*
-16. The Lakehouse — Best of Both Worlds
-17. One Unified Platform, Every Persona
-18. Databricks Core Components *(carousel)*
-19. Why Enterprises Choose Databricks
+**Part 2 · Databricks Workspace Components**
+12. *Part 02 Divider*  13. The Workspace  14. Workspace Architecture *(layered)*
+15. Seven Building Blocks  16. Notebook Lifecycle  17. Cluster Types *(table)*
+18. Repos & Git Integration *(workflow)*  19. Unity Catalog  20. Best Practices & Takeaways
 
-**Section 3 · Databricks Architecture**
-20. *Section 03 Divider*
-21. Architecture Overview — Two Planes
-22. Control Plane & Compute Plane in Detail
-23. Apache Spark — Distributed Execution
-24. Delta Lake — Reliability on the Lake
-25. The Medallion Architecture *(Bronze → Silver → Gold)*
-26. Cluster & Compute Architecture
-27. Security & Governance — Unity Catalog
-28. End-to-End Data Flow *(capstone diagram)*
-29. Integration Architecture — An Open Hub
+**Part 3 · Databricks Lakehouse Architecture**
+21. *Part 03 Divider*  22. Evolution of Data Platforms  23. What Is the Lakehouse?
+24. Lakehouse Architecture *(layered pipeline)*  25. Medallion *(detailed)*
+26. Delta Lake Fundamentals  27. Delta Transaction Flow *(diagram)*  28. Governance & Sharing
+29. AI & ML on the Lakehouse  30. End-to-End Data Pipeline *(capstone)*
+31. Benefits  32. Real-World Example  33. Key Takeaways  34. Thank You
 
-**Wrap-up**
-30. Key Takeaways
-31. Knowledge Check & Interview Questions
-32. Thank You / Closing
+> Day 2 includes all nine required diagrams: Spark architecture, Spark execution,
+> Workspace architecture, Notebook lifecycle, Git workflow, Lakehouse architecture,
+> Medallion, Delta transaction flow, and the end-to-end pipeline.
+
+**Day 1 contents** are documented in `SLIDE-SPECIFICATIONS.md` (Big Data → 5 V's →
+ecosystem → Databricks → Lakehouse → control/compute planes → Spark → Delta →
+medallion → Unity Catalog → end-to-end flow).
 
 ---
 
 ## 🎨 Design system
 
 - **Palette:** Databricks-inspired — *Lava* `#FF3621`, *Navy 800* `#1B3139`,
-  *Oat* `#F9F7F4`, plus a supporting set (blue, green, teal, yellow, purple)
-  and medal tones for the medallion architecture.
-- **Typography:** Segoe UI family (broadly available on Office installs; falls
-  back gracefully elsewhere).
-- **Icons:** drawn as native PowerPoint auto-shapes (cylinders, lightning,
-  gears, clouds, a neural-graph mark, lock, chain, globe, etc.) inside colored
-  tiles — crisp at any zoom, consistent across apps.
-- **System:** a kicker + lava-bar header, consistent footer with page numbers,
-  card/shadow language, carousels, pipelines, timelines, comparison tables and
-  a hub-and-spoke — all from reusable helpers in `deck_kit.py`.
+  *Oat* `#F9F7F4`, plus a supporting set and medal tones for the medallion.
+- **Typography:** Segoe UI family (broadly available; falls back gracefully).
+- **Icons:** native PowerPoint auto-shapes (cylinders, lightning, gears, clouds,
+  a neural-graph mark, lock, chain, globe, etc.) inside colored tiles — crisp at
+  any zoom and consistent across apps.
+- **Composites:** carousels (`flow_steps`), card grids (`grid_cards`), labelled
+  pipelines (`pipeline`), timelines (`timeline`), comparison tables (`vs_table`),
+  hub-and-spoke (`hub_spoke`), section dividers and a kicker/lava-bar header with
+  a consistent footer + page numbers. Day 2 reuses all of these for a matching look.
 
 ---
 
-## 🔧 Regenerating / customizing the deck
+## 🔧 Regenerating / customizing
 
 **Requirements**
 
 ```bash
-pip install python-pptx        # build the .pptx
+pip install python-pptx        # build the .pptx decks
 pip install pymupdf pillow     # only needed for render.sh QA previews
 ```
 
-**Build the presentation**
+**Build**
 
 ```bash
 python3 build_deck.py          # → Big-Data-and-Databricks-Training.pptx
+python3 build_deck_day2.py     # → Databricks-Day2-Spark-Workspace-Lakehouse.pptx
 python3 make_specs.py          # → SLIDE-SPECIFICATIONS.md
+python3 make_specs_day2.py     # → SLIDE-SPECIFICATIONS-Day2.md
 ```
 
-**Render previews (optional, needs LibreOffice + poppler/pymupdf)**
+**Render previews (optional, needs LibreOffice + pymupdf)**
 
 ```bash
-./render.sh                    # → build/slide_##.png  +  build/*.pdf
+./render.sh Databricks-Day2-Spark-Workspace-Lakehouse.pptx   # → build/slide_##.png
 ```
 
 **Customize**
 
-- Edit content in `build_deck.py` — each slide is a small, self-contained
-  `s_*` function; repeated layouts use the `flow_steps`, `grid_cards`,
-  `pipeline`, `timeline`, `vs_table` and `hub_spoke` composites.
+- Edit content in `build_deck*.py` — each slide is a small, self-contained
+  function; repeated layouts use the shared composites.
 - Re-brand by editing the color constants and `FONT` in `deck_kit.py`.
 - Add an icon by extending the `icon()` dispatcher in `deck_kit.py`.
 
-> 💡 Every slide already includes presenter-ready **speaker notes** (visible in
-> PowerPoint's notes pane). The same notes are mirrored in
-> `SLIDE-SPECIFICATIONS.md`.
-
----
-
-## 👥 Audience & use
-
-Designed for a mixed technical audience — Data Engineers, Data Analysts, Data
-Scientists, ML Engineers, Cloud Architects and technical leaders — and adjusts
-depth as it goes: conceptual framing up front, architecture deep-dives in
-Section 3, and a knowledge-check + interview-prep slide to reinforce learning.
+> 💡 Every slide includes presenter-ready **speaker notes** (visible in
+> PowerPoint's notes pane), mirrored in the `SLIDE-SPECIFICATIONS*.md` guides.

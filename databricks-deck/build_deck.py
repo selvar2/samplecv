@@ -37,7 +37,7 @@ def dark_bg(s, decorate=True):
 
 def flow_steps(s, steps, y_top, card_h=1.95, icon_d=0.96, arrow=True,
                title_size=14.5, desc_size=10.8, x0=None, total_w=None,
-               arrow_color=GRAY_LT, card_fill=WHITE):
+               arrow_color=GRAY_LT, card_fill=WHITE, desc_dy=1.58):
     """Horizontal sequence of icon cards with connecting arrows.
     steps: list of dict(title, desc, color, icon, badge?)"""
     n = len(steps)
@@ -58,7 +58,7 @@ def flow_steps(s, steps, y_top, card_h=1.95, icon_d=0.96, arrow=True,
                          fill=NAVY, txt=WHITE, size=12)
         text(s, x + 0.12, y_top + 1.24, cw - 0.24, 0.34, st["title"],
              size=title_size, color=NAVY, bold=True, align=PP_ALIGN.CENTER)
-        text(s, x + 0.16, y_top + 1.58, cw - 0.32, card_h - 1.6, st["desc"],
+        text(s, x + 0.16, y_top + desc_dy, cw - 0.32, card_h - desc_dy - 0.04, st["desc"],
              size=desc_size, color=GRAY_2, align=PP_ALIGN.CENTER, spacing=1.05)
         if arrow and i < n - 1:
             arrow_h(s, x + cw + 0.04, y_top + card_h / 2, aw - 0.08, arrow_color, h=0.18)
