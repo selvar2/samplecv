@@ -16,6 +16,7 @@ every element stays fully editable. All decks share one design system
 | **Day 1** | `Big-Data-and-Databricks-Training.pptx` | 32 | Big Data Fundamentals · Introduction to Databricks · Databricks Architecture |
 | **Day 2** | `Databricks-Day2-Spark-Workspace-Lakehouse.pptx` | 34 | Apache Spark Fundamentals · Workspace Components · Lakehouse Architecture |
 | **Day 3** | `Databricks-Day3-Delta-Lake.pptx` | 28 | Delta Lake — the problem, fundamentals, internals (ACID, transaction log, time travel) & platform value |
+| **Day 4** | `Databricks-Day4-Data-Processing-Concepts.pptx` | 34 | Data Processing — sources & types · ingestion · transformation/ETL·ELT · distributed processing & pipelines · quality & storage |
 
 ---
 
@@ -32,9 +33,12 @@ every element stays fully editable. All decks share one design system
 | **`Databricks-Day3-Delta-Lake.pptx`** | Day 3 deck — 28 slides, 16:9, infographic-rich, speaker notes on every slide. |
 | **`Databricks-Day3-Delta-Lake.pdf`** | Day 3 flat PDF preview. |
 | **`SLIDE-SPECIFICATIONS-Day3.md`** | Day 3 per-slide design doc & facilitator guide. |
+| **`Databricks-Day4-Data-Processing-Concepts.pptx`** | Day 4 deck — 34 slides, 16:9, infographic-rich, speaker notes on every slide. |
+| **`Databricks-Day4-Data-Processing-Concepts.pdf`** | Day 4 flat PDF preview. |
+| **`SLIDE-SPECIFICATIONS-Day4.md`** | Day 4 per-slide design doc & facilitator guide. |
 | `deck_kit.py` | Shared design system — palette, typography, shapes, 35+ vector icons, page furniture, and infographic composites (radial wheel, checklist, before/after). |
 | `build_deck.py` | Day 1 generator (also defines composites reused by later days). |
-| `build_deck_day2.py` / `build_deck_day3.py` | Day 2 & Day 3 generators (import the shared kit + composites). |
+| `build_deck_day2.py` … `build_deck_day4.py` | Day 2-4 generators (import the shared kit + composites). |
 | `make_specs*.py` | Generate the spec docs, pulling speaker notes from each deck. |
 | `render.sh` | Renders a `.pptx` → `.pdf` → per-slide PNGs for visual QA. |
 
@@ -80,6 +84,29 @@ Schema Evolution · Batch + Streaming
 **Part 4 · Platform & Value** — *Divider* · Medallion · Lakehouse *(equation)* ·
 Performance *(dashboard)* · Governance · End-to-End Flow · Use Cases ·
 Benefits *(radial wheel)* · Best Practices *(checklist)* · Takeaways · Q&A
+
+## 🗂️ Day 4 contents (Data Processing Concepts)
+
+**Intro** — Cover · Why It Matters *(Raw→Insight→Value)* · The Data Journey
+*(7 stages)*
+
+**Part 1 · Sources & Types** — Common Sources *(icon grid)* · Structured vs Semi
+vs Unstructured *(comparison)*
+
+**Part 2 · Ingestion** — What Is Ingestion *(pipeline)* · Batch *(timeline)* ·
+Streaming *(real-time flow)* · Batch vs Streaming *(table)*
+
+**Part 3 · Transformation · ETL/ELT** — What Is Transformation · Common
+Transformations · ETL · ELT · ETL vs ELT *(table)*
+
+**Part 4 · Distributed Processing & Pipelines** — Why Distributed *(before/after)* ·
+Spark Model · How Spark Processes · What Is a Pipeline · Pipeline Architecture ·
+Orchestration
+
+**Part 5 · Quality, Storage & Databricks** — Why Quality Matters · Six Quality
+Dimensions *(radial wheel)* · Warehouse vs Lake vs Lakehouse *(comparison)* ·
+Medallion · End-to-End Databricks Flow *(capstone)* · Best Practices *(checklist)* ·
+Use Cases · Takeaways · Q&A
 
 **Day 1 contents** are documented in `SLIDE-SPECIFICATIONS.md` (Big Data → 5 V's →
 ecosystem → Databricks → Lakehouse → control/compute planes → Spark → Delta →
