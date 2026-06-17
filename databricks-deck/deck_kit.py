@@ -411,6 +411,38 @@ def icon(s, kind, cx, cy, size, color=WHITE):
             globe(s, cx, cy, u, color)
         elif k == "doc":
             doc_icon(s, cx, cy, u, color)
+        elif k == "stream":
+            stream_icon(s, cx, cy, u, color)
+        elif k == "transaction":
+            _fill(_ico_shape(s, MSO_SHAPE.CIRCULAR_ARROW, cx, cy, u, u), color)
+        elif k == "clock":
+            clock_icon(s, cx, cy, u, color)
+        elif k == "gauge":
+            gauge_icon(s, cx, cy, u, color)
+        elif k == "warning":
+            warning_icon(s, cx, cy, u, color)
+        elif k == "coins":
+            coins_icon(s, cx, cy, u, color)
+        elif k == "branch":
+            branch_icon(s, cx, cy, u, color)
+        elif k == "target":
+            target_icon(s, cx, cy, u, color)
+        elif k == "api":
+            api_icon(s, cx, cy, u, color)
+        elif k == "iot":
+            iot_icon(s, cx, cy, u, color)
+        elif k == "funnel" or k == "filter":
+            funnel_icon(s, cx, cy, u, color)
+        elif k == "sort":
+            sort_icon(s, cx, cy, u, color)
+        elif k == "merge":
+            merge_icon(s, cx, cy, u, color)
+        elif k == "file":
+            doc_icon(s, cx, cy, u, color)
+        elif k == "table":
+            warehouse(s, cx, cy, u, color)
+        elif k == "pipeline":
+            _fill(_ico_shape(s, MSO_SHAPE.RIGHT_ARROW, cx, cy, u, u * 0.6), color)
         else:
             _fill(_ico_shape(s, MSO_SHAPE.OVAL, cx, cy, u * 0.6, u * 0.6), color)
     except Exception:
@@ -522,6 +554,126 @@ def doc_icon(s, cx, cy, size, color=WHITE):
                size*0.64, size*0.84, fill=color, line=None)
 
 
+def _lw(size, k=7, lo=1.4):
+    return max(lo, size * k)
+
+
+def stream_icon(s, cx, cy, size, color=WHITE):
+    for i in range(3):
+        x = cx - size*0.46 + i*size*0.34
+        sp = shape(s, MSO_SHAPE.CHEVRON, x, cy-size*0.34, size*0.30, size*0.68,
+                   fill=color, line=None)
+        try:
+            sp.adjustments[0] = 0.62
+        except Exception:
+            pass
+
+
+def clock_icon(s, cx, cy, size, color=WHITE):
+    shape(s, MSO_SHAPE.OVAL, cx-size*0.46, cy-size*0.46, size*0.92, size*0.92,
+          fill=None, line=color, line_w=_lw(size))
+    shape(s, MSO_SHAPE.ROUNDED_RECTANGLE, cx-size*0.035, cy-size*0.30, size*0.07, size*0.34,
+          fill=color, line=None, adj=0.5)
+    shape(s, MSO_SHAPE.ROUNDED_RECTANGLE, cx-size*0.02, cy-size*0.035, size*0.26, size*0.07,
+          fill=color, line=None, adj=0.5)
+    circle(s, cx, cy, size*0.11, color)
+
+
+def gauge_icon(s, cx, cy, size, color=WHITE):
+    shape(s, MSO_SHAPE.OVAL, cx-size*0.46, cy-size*0.46, size*0.92, size*0.92,
+          fill=None, line=color, line_w=_lw(size))
+    needle = shape(s, MSO_SHAPE.ROUNDED_RECTANGLE, cx-size*0.04, cy-size*0.32, size*0.08, size*0.36,
+                   fill=color, line=None, adj=0.5)
+    needle.rotation = 42
+    circle(s, cx, cy, size*0.13, color)
+
+
+def warning_icon(s, cx, cy, size, color=WHITE):
+    shape(s, MSO_SHAPE.ISOSCELES_TRIANGLE, cx-size*0.5, cy-size*0.44, size, size*0.88,
+          fill=None, line=color, line_w=_lw(size, lo=1.6))
+    shape(s, MSO_SHAPE.ROUNDED_RECTANGLE, cx-size*0.05, cy-size*0.08, size*0.10, size*0.26,
+          fill=color, line=None, adj=0.5)
+    circle(s, cx, cy+size*0.28, size*0.085, color)
+
+
+def coins_icon(s, cx, cy, size, color=WHITE):
+    for dy in (size*0.22, 0.0, -size*0.22):
+        shape(s, MSO_SHAPE.OVAL, cx-size*0.4, cy+dy-size*0.11, size*0.8, size*0.22,
+              fill=color, line=None)
+
+
+def branch_icon(s, cx, cy, size, color=WHITE):
+    lx, rx = cx - size*0.24, cx + size*0.26
+    top, bot, mid = cy - size*0.42, cy + size*0.42, cy
+    for (x1, y1, x2, y2) in [(lx, top, lx, bot), (lx, mid, rx, top)]:
+        ln = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x1), Inches(y1),
+                                    Inches(x2), Inches(y2))
+        ln.line.color.rgb = color
+        ln.line.width = Pt(_lw(size, 6, 1.6))
+    for (x, y) in [(lx, top), (lx, bot), (rx, top)]:
+        circle(s, x, y, size*0.26, color)
+
+
+def target_icon(s, cx, cy, size, color=WHITE):
+    shape(s, MSO_SHAPE.OVAL, cx-size*0.46, cy-size*0.46, size*0.92, size*0.92,
+          fill=None, line=color, line_w=_lw(size, 6))
+    shape(s, MSO_SHAPE.OVAL, cx-size*0.26, cy-size*0.26, size*0.52, size*0.52,
+          fill=None, line=color, line_w=_lw(size, 6))
+    circle(s, cx, cy, size*0.15, color)
+
+
+def api_icon(s, cx, cy, size, color=WHITE):
+    lft = shape(s, MSO_SHAPE.CHEVRON, cx-size*0.5, cy-size*0.28, size*0.30, size*0.56,
+                fill=color, line=None)
+    lft.rotation = 180
+    shape(s, MSO_SHAPE.CHEVRON, cx+size*0.2, cy-size*0.28, size*0.30, size*0.56,
+          fill=color, line=None)
+    sl = shape(s, MSO_SHAPE.ROUNDED_RECTANGLE, cx-size*0.04, cy-size*0.32, size*0.08, size*0.64,
+               fill=color, line=None, adj=0.5)
+    sl.rotation = 22
+
+
+def iot_icon(s, cx, cy, size, color=WHITE):
+    shape(s, MSO_SHAPE.ROUNDED_RECTANGLE, cx-size*0.28, cy-size*0.28, size*0.56, size*0.56,
+          fill=color, line=None, adj=0.18)
+    for dx in (-size*0.12, size*0.12):
+        shape(s, MSO_SHAPE.RECTANGLE, cx+dx-size*0.025, cy-size*0.44, size*0.05, size*0.16, fill=color, line=None)
+        shape(s, MSO_SHAPE.RECTANGLE, cx+dx-size*0.025, cy+size*0.28, size*0.05, size*0.16, fill=color, line=None)
+    for dy in (-size*0.12, size*0.12):
+        shape(s, MSO_SHAPE.RECTANGLE, cx-size*0.44, cy+dy-size*0.025, size*0.16, size*0.05, fill=color, line=None)
+        shape(s, MSO_SHAPE.RECTANGLE, cx+size*0.28, cy+dy-size*0.025, size*0.16, size*0.05, fill=color, line=None)
+
+
+def funnel_icon(s, cx, cy, size, color=WHITE):
+    tr = shape(s, MSO_SHAPE.TRAPEZOID, cx-size*0.42, cy-size*0.36, size*0.84, size*0.40,
+               fill=color, line=None)
+    tr.rotation = 180
+    shape(s, MSO_SHAPE.RECTANGLE, cx-size*0.06, cy+size*0.04, size*0.12, size*0.34, fill=color, line=None)
+
+
+def sort_icon(s, cx, cy, size, color=WHITE):
+    for i, w in enumerate([0.84, 0.6, 0.36]):
+        shape(s, MSO_SHAPE.ROUNDED_RECTANGLE, cx-size*0.42, cy-size*0.34+i*size*0.30,
+              size*w, size*0.15, fill=color, line=None, adj=0.5)
+
+
+def merge_icon(s, cx, cy, size, color=WHITE):
+    for (x1, y1) in [(cx-size*0.4, cy-size*0.4), (cx+size*0.4, cy-size*0.4)]:
+        ln = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x1), Inches(y1),
+                                    Inches(cx), Inches(cy+size*0.06))
+        ln.line.color.rgb = color
+        ln.line.width = Pt(_lw(size, 6, 1.6))
+    ln = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(cx), Inches(cy+size*0.06),
+                                Inches(cx), Inches(cy+size*0.30))
+    ln.line.color.rgb = color
+    ln.line.width = Pt(_lw(size, 6, 1.6))
+    ah = shape(s, MSO_SHAPE.ISOSCELES_TRIANGLE, cx-size*0.13, cy+size*0.28, size*0.26, size*0.18,
+               fill=color, line=None)
+    ah.rotation = 180
+    for (x, y) in [(cx-size*0.4, cy-size*0.4), (cx+size*0.4, cy-size*0.4)]:
+        circle(s, x, y, size*0.17, color)
+
+
 # --------------------------------------------------------------------------- #
 #  Composite building blocks                                                   #
 # --------------------------------------------------------------------------- #
@@ -539,3 +691,93 @@ def number_badge(s, cx, cy, d, n, fill=LAVA, txt=WHITE, size=15):
     r = p.add_run(); r.text = str(n)
     r.font.size = Pt(size); r.font.bold = True; r.font.color.rgb = txt; r.font.name = FONT_SB
     return c
+
+
+# --------------------------------------------------------------------------- #
+#  Infographic composites (radial wheel · checklist · before/after)           #
+# --------------------------------------------------------------------------- #
+import math
+
+
+def radial_infographic(s, cx, cy, radius, center_label, nodes, center_color=LAVA,
+                       center_d=1.85, node_d=1.12, label_size=12, start_ang=-90,
+                       center_icon=None, label_w=2.0):
+    """A 'wheel' infographic: a central hub with icon nodes arranged radially.
+    nodes: list of dict(title, icon, color, desc?)."""
+    n = len(nodes)
+    # connectors first so nodes sit on top
+    for i in range(n):
+        ang = math.radians(start_ang + i * (360.0 / n))
+        nx, ny = cx + radius * math.cos(ang), cy + radius * math.sin(ang)
+        ln = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(cx), Inches(cy),
+                                    Inches(nx), Inches(ny))
+        ln.line.color.rgb = OAT_3
+        ln.line.width = Pt(1.6)
+    # nodes + labels
+    for i, nd in enumerate(nodes):
+        ang = math.radians(start_ang + i * (360.0 / n))
+        nx, ny = cx + radius * math.cos(ang), cy + radius * math.sin(ang)
+        icon_tile(s, nx, ny, node_d, nd["icon"], nd["color"], shadow=True)
+        above = ny < cy - 0.05
+        ly = ny - node_d / 2 - (0.30 + (0.20 if nd.get("desc") else 0)) if above else ny + node_d / 2 + 0.05
+        text(s, nx - label_w / 2, ly, label_w, 0.3, nd["title"], size=label_size,
+             color=NAVY, bold=True, align=PP_ALIGN.CENTER, spacing=0.92)
+        if nd.get("desc"):
+            text(s, nx - label_w / 2, ly + 0.27, label_w, 0.4, nd["desc"], size=8.6,
+                 color=GRAY_2, align=PP_ALIGN.CENTER, spacing=0.92)
+    # center hub
+    circle(s, cx, cy, center_d, center_color, line=WHITE, line_w=3, shadow=True)
+    ring_c = RGBColor(0xFF, 0x8A, 0x78) if center_color == LAVA else WHITE
+    circle(s, cx, cy, center_d - 0.22, None, line=ring_c, line_w=1.3)
+    if center_icon:
+        icon(s, center_icon, cx, cy - 0.30, 0.46, WHITE)
+        text(s, cx - center_d / 2, cy + 0.06, center_d, 0.7, center_label, size=12.5,
+             color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, spacing=0.9)
+    else:
+        text(s, cx - center_d / 2, cy - 0.42, center_d, 0.84, center_label, size=15,
+             color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, spacing=0.95)
+
+
+def checklist(s, x, y, w, items, cols=2, row_h=0.66, gap_x=0.45,
+              icon_color=GREEN, size=12, dot_d=0.42):
+    """Two-column checklist with green check badges. items: list of strings."""
+    n = len(items)
+    per_col = (n + cols - 1) // cols
+    col_w = (w - (cols - 1) * gap_x) / cols
+    for i, it in enumerate(items):
+        c, r = divmod(i, per_col)
+        x0 = x + c * (col_w + gap_x)
+        yy = y + r * row_h
+        cyc = yy + row_h / 2 - 0.04
+        circle(s, x0 + dot_d / 2, cyc, dot_d, icon_color, shadow=True)
+        check(s, x0 + dot_d / 2, cyc, dot_d * 0.62, WHITE, weight=dot_d * 0.11)
+        text(s, x0 + dot_d + 0.18, yy, col_w - dot_d - 0.22, row_h, it,
+             size=size, color=GRAY, anchor=MSO_ANCHOR.MIDDLE, spacing=1.02)
+
+
+def before_after(s, y, h, left_title, left_items, right_title, right_items,
+                 left_color=LAVA_DK, right_color=GREEN_DK,
+                 left_icon="warning", right_icon="check", item_size=12.5):
+    """Two contrasting panels separated by a VS badge."""
+    half = (CW - 0.7) / 2
+    # left
+    card(s, MX, y, half, h, fill=WHITE, line=LINE, shadow=True)
+    band(s, MX, y, half, 0.62, left_color)
+    icon(s, left_icon, MX + 0.45, y + 0.31, 0.34, WHITE)
+    text(s, MX + 0.82, y, half - 0.9, 0.62, left_title, size=13, color=WHITE,
+         bold=True, anchor=MSO_ANCHOR.MIDDLE, font=FONT_SB)
+    bullets(s, MX + 0.38, y + 0.86, half - 0.72, h - 1.0, left_items,
+            size=item_size, marker=left_color, gap=10)
+    # right
+    rx = MX + half + 0.7
+    card(s, rx, y, half, h, fill=NAVY, line=None, shadow=True)
+    band(s, rx, y, half, 0.62, right_color)
+    icon(s, right_icon, rx + 0.45, y + 0.31, 0.34, WHITE)
+    text(s, rx + 0.82, y, half - 0.9, 0.62, right_title, size=13, color=WHITE,
+         bold=True, anchor=MSO_ANCHOR.MIDDLE, font=FONT_SB)
+    bullets(s, rx + 0.38, y + 0.86, half - 0.72, h - 1.0, right_items,
+            size=item_size, marker=GREEN, color=RGBColor(0xD6, 0xDE, 0xE1), gap=10)
+    # VS badge
+    circle(s, SW / 2, y + h / 2, 0.74, LAVA, line=WHITE, line_w=3, shadow=True)
+    text(s, SW / 2 - 0.4, y + h / 2 - 0.22, 0.8, 0.44, "VS", size=16, color=WHITE,
+         bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)

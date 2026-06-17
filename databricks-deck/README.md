@@ -8,13 +8,14 @@ Each deck is generated programmatically with
 [`python-pptx`](https://python-pptx.readthedocs.io) and rendered entirely from
 **native PowerPoint vector shapes** (no external images, no emoji), so it looks
 identical in Microsoft PowerPoint, Google Slides, Keynote and LibreOffice, and
-every element stays fully editable. Both days share one design system
+every element stays fully editable. All decks share one design system
 (`deck_kit.py`), so they look and feel like one series.
 
 | Day | Deck | Slides | Topics |
 |-----|------|:------:|--------|
 | **Day 1** | `Big-Data-and-Databricks-Training.pptx` | 32 | Big Data Fundamentals · Introduction to Databricks · Databricks Architecture |
 | **Day 2** | `Databricks-Day2-Spark-Workspace-Lakehouse.pptx` | 34 | Apache Spark Fundamentals · Workspace Components · Lakehouse Architecture |
+| **Day 3** | `Databricks-Day3-Delta-Lake.pptx` | 28 | Delta Lake — the problem, fundamentals, internals (ACID, transaction log, time travel) & platform value |
 
 ---
 
@@ -28,10 +29,13 @@ every element stays fully editable. Both days share one design system
 | **`Databricks-Day2-Spark-Workspace-Lakehouse.pptx`** | Day 2 deck — 34 slides, 16:9, speaker notes on every slide. |
 | **`Databricks-Day2-Spark-Workspace-Lakehouse.pdf`** | Day 2 flat PDF preview. |
 | **`SLIDE-SPECIFICATIONS-Day2.md`** | Day 2 per-slide design doc & facilitator guide. |
-| `deck_kit.py` | Shared design system — palette, typography, shapes, vector icons, page furniture and layout composites. |
-| `build_deck.py` | Day 1 generator (also defines composites reused by Day 2). |
-| `build_deck_day2.py` | Day 2 generator (imports the shared kit + composites). |
-| `make_specs.py` / `make_specs_day2.py` | Generate the spec docs, pulling speaker notes from each deck. |
+| **`Databricks-Day3-Delta-Lake.pptx`** | Day 3 deck — 28 slides, 16:9, infographic-rich, speaker notes on every slide. |
+| **`Databricks-Day3-Delta-Lake.pdf`** | Day 3 flat PDF preview. |
+| **`SLIDE-SPECIFICATIONS-Day3.md`** | Day 3 per-slide design doc & facilitator guide. |
+| `deck_kit.py` | Shared design system — palette, typography, shapes, 35+ vector icons, page furniture, and infographic composites (radial wheel, checklist, before/after). |
+| `build_deck.py` | Day 1 generator (also defines composites reused by later days). |
+| `build_deck_day2.py` / `build_deck_day3.py` | Day 2 & Day 3 generators (import the shared kit + composites). |
+| `make_specs*.py` | Generate the spec docs, pulling speaker notes from each deck. |
 | `render.sh` | Renders a `.pptx` → `.pdf` → per-slide PNGs for visual QA. |
 
 ---
@@ -61,6 +65,22 @@ every element stays fully editable. Both days share one design system
 > Workspace architecture, Notebook lifecycle, Git workflow, Lakehouse architecture,
 > Medallion, Delta transaction flow, and the end-to-end pipeline.
 
+## 🗂️ Day 3 contents (Delta Lake — infographic-rich)
+
+**Part 1 · The Problem** — Cover · Roadmap · *Divider* · Why Data Lakes Fail
+*(broken-lake infographic)* · Business Cost of Bad Data *(stat panel)*
+
+**Part 2 · Fundamentals** — *Divider* · What Is Delta Lake *(radial wheel)* ·
+Architecture *(layered)* · Five Core Components *(radial wheel)*
+
+**Part 3 · How It Works** — *Divider* · ACID *(4-card)* · Transaction Log ·
+Reliability flow · Time Travel *(timeline)* · Schema Enforcement *(before/after)* ·
+Schema Evolution · Batch + Streaming
+
+**Part 4 · Platform & Value** — *Divider* · Medallion · Lakehouse *(equation)* ·
+Performance *(dashboard)* · Governance · End-to-End Flow · Use Cases ·
+Benefits *(radial wheel)* · Best Practices *(checklist)* · Takeaways · Q&A
+
 **Day 1 contents** are documented in `SLIDE-SPECIFICATIONS.md` (Big Data → 5 V's →
 ecosystem → Databricks → Lakehouse → control/compute planes → Spark → Delta →
 medallion → Unity Catalog → end-to-end flow).
@@ -72,13 +92,16 @@ medallion → Unity Catalog → end-to-end flow).
 - **Palette:** Databricks-inspired — *Lava* `#FF3621`, *Navy 800* `#1B3139`,
   *Oat* `#F9F7F4`, plus a supporting set and medal tones for the medallion.
 - **Typography:** Segoe UI family (broadly available; falls back gracefully).
-- **Icons:** native PowerPoint auto-shapes (cylinders, lightning, gears, clouds,
-  a neural-graph mark, lock, chain, globe, etc.) inside colored tiles — crisp at
-  any zoom and consistent across apps.
+- **Icons:** 35+ native PowerPoint auto-shapes (cylinders, lightning, gears,
+  clouds, a neural-graph mark, lock, chain, globe, clock, gauge, warning, coins,
+  git-branch, target, API brackets, IoT chip, funnel, stream, transaction, etc.)
+  inside colored tiles — crisp at any zoom and consistent across apps.
 - **Composites:** carousels (`flow_steps`), card grids (`grid_cards`), labelled
   pipelines (`pipeline`), timelines (`timeline`), comparison tables (`vs_table`),
-  hub-and-spoke (`hub_spoke`), section dividers and a kicker/lava-bar header with
-  a consistent footer + page numbers. Day 2 reuses all of these for a matching look.
+  hub-and-spoke (`hub_spoke`), radial "wheel" infographics (`radial_infographic`),
+  checklists (`checklist`), before/after panels (`before_after`), section dividers
+  and a kicker/lava-bar header with a consistent footer + page numbers. Every day
+  reuses these for a matching look.
 
 ---
 
