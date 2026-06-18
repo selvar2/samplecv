@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DIVS Starburst &amp; Redshift Support — Executive Overview</title>
+<meta name="description" content="Executive overview of DIVS platform support across Starburst and Redshift environments." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg-0:#0A0E1A;
+    --bg-1:#0E1424;
+    --bg-2:#131A2E;
+    --bg-3:#1A2340;
+    --star:#A855F7;      /* Starburst violet */
+    --star-lt:#C084FC;
+    --red:#FF6B3D;       /* Redshift amber-red */
+    --red-lt:#FF8C5A;
+    --cyan:#22D3EE;
+    --text:#EDF1FA;
+    --muted:#93A0BF;
+    --faint:#5A6782;
+    --line:rgba(255,255,255,.07);
+    --line-2:rgba(255,255,255,.12);
+    --star-bd:rgba(168,85,247,.28);
+    --red-bd:rgba(255,107,61,.28);
+    --grad:linear-gradient(135deg,#A855F7 0%,#FF6B3D 100%);
+    --grad-soft:linear-gradient(135deg,rgba(168,85,247,.16),rgba(255,107,61,.16));
+    --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+    --font-display:'Space Grotesk','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+    --font-body:'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  }
+
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--font-body);
+    background:var(--bg-0);
+    color:var(--text);
+    overflow-x:hidden;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:rgba(168,85,247,.35);color:#fff}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:0 32px}
+
+  /* ───────── SCROLL PROGRESS ───────── */
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0;z-index:200;
+    background:var(--grad);box-shadow:0 0 12px rgba(168,85,247,.6);
+    transition:width .08s linear;
+  }
+
+  /* ───────── HEADER ───────── */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:150;
+    backdrop-filter:blur(18px);
+    background:rgba(10,14,26,.72);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text)}
+  .brand-mark{
+    width:34px;height:34px;border-radius:10px;flex-shrink:0;position:relative;
+    background:var(--grad);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 22px rgba(168,85,247,.5);
+  }
+  .brand-mark svg{width:18px;height:18px;color:#fff}
+  .brand-name{font-family:var(--font-display);font-weight:600;font-size:14px;letter-spacing:.01em;line-height:1.1}
+  .brand-name small{display:block;font-family:var(--font-body);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .nav-links{display:flex;gap:4px}
+  .nav-links a{
+    text-decoration:none;color:var(--muted);font-size:13px;font-weight:500;
+    padding:7px 13px;border-radius:9px;transition:color .2s,background .2s;
+  }
+  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,.05)}
+  .nav-links a.active{color:var(--text);background:var(--grad-soft)}
+  .status-pill{
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--star-bd);background:rgba(168,85,247,.1);
+    padding:6px 14px;border-radius:100px;font-size:11.5px;font-weight:600;
+    color:var(--star-lt);letter-spacing:.04em;white-space:nowrap;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:#34D399;box-shadow:0 0 8px #34D399;animation:pulse 2.2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+  /* ───────── HERO ───────── */
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 32px 90px;overflow:hidden}
+  #particles{position:absolute;inset:0;z-index:0}
+  .hero-glow{position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(48% 55% at 18% 22%,rgba(168,85,247,.22),transparent 60%),
+      radial-gradient(46% 50% at 84% 78%,rgba(255,107,61,.18),transparent 60%),
+      radial-gradient(40% 40% at 60% 8%,rgba(34,211,238,.07),transparent 55%);
+    animation:drift 16s ease-in-out infinite alternate;
+  }
+  @keyframes drift{from{transform:translate3d(-12px,-8px,0) scale(1)}to{transform:translate3d(14px,10px,0) scale(1.06)}}
+  .hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+    background-size:62px 62px;
+    mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 25%,transparent 92%);
+    -webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 45%,#000 25%,transparent 92%);
+  }
+  .hero-inner{position:relative;z-index:2;max-width:980px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:9px;
+    border:1px solid var(--star-bd);background:rgba(168,85,247,.08);
+    padding:7px 16px;border-radius:100px;margin-bottom:30px;
+    font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--star-lt);
+  }
+  .eyebrow .dot{background:var(--star-lt);box-shadow:0 0 8px var(--star-lt)}
+  .hero h1{
+    font-family:var(--font-display);font-weight:700;
+    font-size:clamp(38px,7.4vw,84px);line-height:.98;letter-spacing:-.03em;margin-bottom:22px;
+  }
+  .hero h1 .kick{display:block;font-size:clamp(14px,1.8vw,20px);font-weight:600;letter-spacing:.42em;color:var(--muted);margin-bottom:16px;text-transform:uppercase}
+  .grad-star{background:linear-gradient(120deg,#C084FC,#A855F7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .grad-red{background:linear-gradient(120deg,#FF8C5A,#FF5A3D);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .amp{color:var(--faint);font-weight:400}
+  .hero p.lede{max-width:680px;margin:0 auto 46px;font-size:clamp(15px,1.7vw,18px);color:var(--muted);line-height:1.7}
+  .hero p.lede strong{color:var(--text);font-weight:600}
+
+  /* hero outcome counters */
+  .outcomes{display:flex;flex-wrap:wrap;justify-content:center;gap:18px}
+  .outcome{
+    flex:1 1 200px;max-width:260px;position:relative;
+    background:rgba(19,26,46,.6);backdrop-filter:blur(10px);
+    border:1px solid var(--line);border-radius:18px;padding:26px 22px;
+    overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s;
+  }
+  .outcome::before{content:'';position:absolute;inset:0;border-radius:18px;padding:1px;
+    background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
+  .outcome:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+  .outcome:hover::before{opacity:1}
+  .outcome .num{font-family:var(--font-display);font-weight:700;font-size:clamp(34px,4.5vw,48px);line-height:1;letter-spacing:-.02em;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .outcome .lbl{margin-top:8px;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+  .scroll-cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:var(--faint);font-size:11px;letter-spacing:.18em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .scroll-cue span{width:22px;height:34px;border:1.5px solid var(--line-2);border-radius:12px;position:relative}
+  .scroll-cue span::after{content:'';position:absolute;top:6px;left:50%;width:3px;height:7px;border-radius:3px;background:var(--star-lt);transform:translateX(-50%);animation:wheel 1.8s infinite}
+  @keyframes wheel{0%{opacity:0;top:6px}40%{opacity:1}80%{opacity:0;top:18px}100%{opacity:0}}
+
+  /* ───────── SECTION SHELL ───────── */
+  section{padding:96px 0;position:relative}
+  .sec-head{margin-bottom:48px;max-width:680px}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-label{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--star-lt);margin-bottom:14px}
+  .sec-label::before{content:'';width:22px;height:2px;border-radius:2px;background:var(--grad)}
+  .sec-title{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3.4vw,42px);letter-spacing:-.02em;line-height:1.08;margin-bottom:14px}
+  .sec-sub{font-size:15.5px;color:var(--muted);line-height:1.7}
+
+  /* ───────── SCOPE / KPI ───────── */
+  .scope{background:linear-gradient(180deg,var(--bg-0),var(--bg-1))}
+  .scope-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .stat{
+    position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:20px;
+    padding:28px 26px;overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s;
+  }
+  .stat:hover{transform:translateY(-6px);border-color:var(--star-bd);box-shadow:var(--shadow)}
+  .stat-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;background:var(--grad-soft);border:1px solid var(--line)}
+  .stat-ico svg{width:22px;height:22px;color:var(--star-lt)}
+  .stat .num{font-family:var(--font-display);font-weight:700;font-size:clamp(38px,4vw,52px);line-height:1;letter-spacing:-.02em;color:#fff}
+  .stat .name{margin-top:6px;font-size:15px;font-weight:600;color:var(--text)}
+  .stat .desc{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .stat-bar{margin-top:18px;height:5px;border-radius:100px;background:rgba(255,255,255,.06);overflow:hidden}
+  .stat-bar i{display:block;height:100%;width:0;border-radius:100px;background:var(--grad);transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+
+  /* ───────── SERVICE COVERAGE ───────── */
+  .coverage{background:var(--bg-1)}
+  .cov-list{display:grid;gap:14px}
+  .cov{
+    border:1px solid var(--line);border-radius:18px;background:var(--bg-2);overflow:hidden;
+    transition:border-color .3s,background .3s;position:relative;
+  }
+  .cov::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grad);opacity:.5;transition:opacity .3s}
+  .cov:hover{border-color:var(--star-bd)}
+  .cov:hover::before,.cov.open::before{opacity:1}
+  .cov-btn{width:100%;display:flex;align-items:center;gap:18px;padding:22px 26px;background:none;border:0;cursor:pointer;text-align:left;color:var(--text)}
+  .cov-ico{width:46px;height:46px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--grad-soft);border:1px solid var(--line)}
+  .cov-ico svg{width:23px;height:23px;color:var(--star-lt)}
+  .cov-titles{flex:1}
+  .cov-name{font-family:var(--font-display);font-size:17px;font-weight:600}
+  .cov-tag{font-size:12.5px;color:var(--faint);margin-top:2px;letter-spacing:.04em}
+  .cov-plus{width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:transform .35s,color .3s,border-color .3s}
+  .cov.open .cov-plus{transform:rotate(135deg);color:var(--star-lt);border-color:var(--star-bd)}
+  .cov-plus svg{width:15px;height:15px}
+  .cov-panel{max-height:0;overflow:hidden;transition:max-height .4s ease}
+  .cov-panel-inner{padding:0 26px 24px 90px;color:var(--muted);font-size:14.5px;line-height:1.7}
+  .cov-panel-inner .hl{color:var(--text);font-weight:500}
+
+  /* ───────── ECOSYSTEM ───────── */
+  .eco{background:linear-gradient(180deg,var(--bg-1),var(--bg-0))}
+  .tabs{display:inline-flex;gap:6px;padding:6px;border:1px solid var(--line);border-radius:14px;background:var(--bg-2);margin-bottom:40px}
+  .tab{border:0;background:none;cursor:pointer;color:var(--muted);font-family:var(--font-body);font-size:13.5px;font-weight:600;padding:10px 22px;border-radius:9px;transition:color .25s;position:relative}
+  .tab.active{color:#fff}
+  .tab.active::before{content:'';position:absolute;inset:0;border-radius:9px;background:var(--grad);z-index:-1;box-shadow:0 6px 18px -6px rgba(168,85,247,.7)}
+  .tab-panel{display:none;animation:fadeUp .5s ease}
+  .tab-panel.active{display:block}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .nodes{display:flex;flex-wrap:wrap;gap:16px}
+  .node{
+    position:relative;display:flex;align-items:center;gap:14px;
+    border:1px solid var(--line);background:var(--bg-2);border-radius:16px;
+    padding:20px 24px;min-width:190px;flex:1 1 190px;max-width:230px;
+    transition:transform .3s,border-color .3s,box-shadow .3s;cursor:default;
+  }
+  .node:hover{transform:translateY(-5px);border-color:var(--star-bd);box-shadow:var(--shadow)}
+  .node-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.18)}
+  .node-ico svg{width:21px;height:21px;color:var(--cyan)}
+  .node.tool .node-ico{background:rgba(255,107,61,.1);border-color:rgba(255,107,61,.2)}
+  .node.tool .node-ico svg{color:var(--red-lt)}
+  .node-name{font-family:var(--font-display);font-size:15px;font-weight:600}
+  .node-kind{font-size:11.5px;color:var(--faint);margin-top:1px;letter-spacing:.03em}
+  /* tooltip */
+  .tip{position:relative}
+  .tip[data-tip]:hover::after{
+    content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 12px);transform:translateX(-50%);
+    background:#05070F;color:var(--text);border:1px solid var(--line-2);border-radius:10px;
+    padding:9px 14px;font-size:12px;white-space:nowrap;box-shadow:var(--shadow);z-index:20;opacity:1;
+  }
+  .tip[data-tip]:hover::before{
+    content:'';position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%) rotate(45deg);
+    width:9px;height:9px;background:#05070F;border-right:1px solid var(--line-2);border-bottom:1px solid var(--line-2);z-index:20;
+  }
+  .eco-hub{display:flex;align-items:center;gap:12px;margin-top:26px;font-size:13px;color:var(--faint)}
+  .eco-hub .pill{display:inline-flex;align-items:center;gap:8px;border:1px dashed var(--line-2);border-radius:100px;padding:8px 16px;color:var(--muted)}
+  .eco-hub .pill b{color:var(--star-lt);font-weight:600}
+
+  /* ───────── WORKLOAD TIMELINE ───────── */
+  .work{background:var(--bg-1)}
+  .timeline{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:8px}
+  .timeline::before{content:'';position:absolute;top:27px;left:6%;right:6%;height:2px;background:linear-gradient(90deg,var(--star),var(--red));opacity:.35}
+  .step{position:relative;text-align:center}
+  .step-node{width:54px;height:54px;border-radius:50%;margin:0 auto 22px;display:flex;align-items:center;justify-content:center;
+    background:var(--bg-2);border:1px solid var(--star-bd);position:relative;z-index:2;transition:transform .3s,box-shadow .3s}
+  .step-node svg{width:24px;height:24px;color:var(--star-lt)}
+  .step:hover .step-node{transform:translateY(-4px) scale(1.05);box-shadow:0 0 24px rgba(168,85,247,.4)}
+  .step-no{position:absolute;top:-8px;right:calc(50% - 38px);font-family:var(--font-display);font-size:11px;font-weight:700;color:#fff;background:var(--grad);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:3}
+  .step-card{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px 18px;transition:border-color .3s,transform .3s}
+  .step:hover .step-card{border-color:var(--star-bd);transform:translateY(-3px)}
+  .step-title{font-family:var(--font-display);font-size:14.5px;font-weight:600;line-height:1.35}
+
+  /* ───────── TECH STACK ───────── */
+  .stack{background:linear-gradient(180deg,var(--bg-1),var(--bg-0))}
+  .stack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .tcard{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:20px;padding:26px;overflow:hidden;transition:transform .35s,border-color .3s,box-shadow .3s}
+  .tcard::after{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--cap,var(--grad))}
+  .tcard:hover{transform:translateY(-6px);border-color:var(--line-2);box-shadow:var(--shadow)}
+  .tcard-head{display:flex;align-items:center;gap:13px;margin-bottom:18px}
+  .tcard-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+  .tcard-ico svg{width:21px;height:21px;color:var(--cicon,var(--star-lt))}
+  .tcard-cat{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .tcard-h{font-family:var(--font-display);font-size:18px;font-weight:600;margin-top:1px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-size:12.5px;font-weight:500;padding:6px 13px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);transition:background .25s,color .25s,border-color .25s,transform .25s}
+  .tcard:hover .chip{color:var(--text);border-color:var(--line-2)}
+  .chip:hover{background:var(--grad-soft);color:#fff;transform:translateY(-2px)}
+
+  /* ───────── CHARTER ───────── */
+  .charter{background:var(--bg-0);padding:110px 0}
+  .charter-card{position:relative;max-width:980px;margin:0 auto;text-align:center;border-radius:28px;padding:64px 48px;
+    background:radial-gradient(120% 140% at 50% 0%,rgba(168,85,247,.12),transparent 60%),var(--bg-2);overflow:hidden}
+  .charter-card::before{content:'';position:absolute;inset:0;border-radius:28px;padding:1.5px;background:var(--grad);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+  .charter-card::after{content:'';position:absolute;width:340px;height:340px;border-radius:50%;filter:blur(70px);background:rgba(255,107,61,.14);bottom:-160px;right:-120px}
+  .q-mark{font-family:var(--font-display);font-size:80px;line-height:.6;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:6px}
+  .charter-label{font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--star-lt);margin-bottom:20px;position:relative}
+  .charter-text{position:relative;font-family:var(--font-display);font-weight:500;font-size:clamp(20px,2.6vw,30px);line-height:1.5;letter-spacing:-.01em;color:var(--text)}
+  .charter-text b{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+
+  /* ───────── FOOTER ───────── */
+  footer{border-top:1px solid var(--line);background:var(--bg-1);padding:42px 0}
+  .foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+  .foot-brand{display:flex;align-items:center;gap:13px}
+  .foot-brand .brand-mark{width:38px;height:38px}
+  .foot-title{font-family:var(--font-display);font-size:15px;font-weight:600}
+  .foot-title small{display:block;font-family:var(--font-body);font-size:12px;font-weight:400;color:var(--muted)}
+  .foot-meta{font-size:12.5px;color:var(--faint)}
+  .to-top{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--muted);font-size:13px;font-weight:500;border:1px solid var(--line);padding:9px 16px;border-radius:10px;transition:color .25s,border-color .25s}
+  .to-top:hover{color:var(--text);border-color:var(--star-bd)}
+
+  /* ───────── REVEAL ───────── */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.visible{opacity:1;transform:none}
+
+  /* ───────── RESPONSIVE ───────── */
+  @media(max-width:1024px){
+    .nav-links{display:none}
+    .scope-grid{grid-template-columns:repeat(2,1fr)}
+    .stack-grid{grid-template-columns:repeat(2,1fr)}
+    .timeline{grid-template-columns:repeat(2,1fr);gap:34px 22px}
+    .timeline::before{display:none}
+  }
+  @media(max-width:640px){
+    .wrap{padding:0 20px}
+    section{padding:72px 0}
+    .scope-grid{grid-template-columns:1fr}
+    .stack-grid{grid-template-columns:1fr}
+    .timeline{grid-template-columns:1fr}
+    .cov-panel-inner{padding-left:26px}
+    .charter-card{padding:48px 26px}
+    .status-pill{display:none}
+    .foot{flex-direction:column;align-items:flex-start}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    .reveal{opacity:1;transform:none}
+    #particles{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ───────── HEADER ───────── -->
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg>
+      </span>
+      <span class="brand-name">DIVS Support<small>Starburst &amp; Redshift</small></span>
+    </a>
+    <nav class="nav-links" aria-label="Section navigation">
+      <a href="#scope">Scope</a>
+      <a href="#coverage">Coverage</a>
+      <a href="#ecosystem">Ecosystem</a>
+      <a href="#workload">Workload</a>
+      <a href="#stack">Stack</a>
+      <a href="#charter">Charter</a>
+    </nav>
+    <span class="status-pill"><span class="dot"></span>Platform Support · Live</span>
+  </div>
+</header>
+
+<!-- ───────── HERO ───────── -->
+<div class="hero" id="top">
+  <canvas id="particles"></canvas>
+  <div class="hero-glow"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>Platform Operations · Executive Overview</span>
+    <h1>
+      <span class="kick">DIVS</span>
+      <span class="grad-star">Starburst</span> <span class="amp">&amp;</span> <span class="grad-red">Redshift</span> Support
+    </h1>
+    <p class="lede">A unified support function for <strong>Starburst &amp; Redshift environments</strong> — spanning clusters, AWS services, access management, deployments, monitoring, and incident resolution.</p>
+    <div class="outcomes" id="outcomes">
+      <div class="outcome reveal"><div class="num" data-target="1700" data-suffix="+">0</div><div class="lbl">Tickets Resolved</div></div>
+      <div class="outcome reveal"><div class="num" data-target="145" data-suffix="+">0</div><div class="lbl">DNRs Resolved</div></div>
+      <div class="outcome reveal"><div class="num" data-target="150" data-suffix="+">0</div><div class="lbl">Incidents Resolved</div></div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span></span>Scroll</div>
+</div>
+
+<!-- ───────── SCOPE OF SUPPORT ───────── -->
+<section class="scope" id="scope">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Scope of Support</span>
+      <h2 class="sec-title">Environments Under Management</h2>
+      <p class="sec-sub">Production and test estates across both platforms, delivered by a focused offshore support team.</p>
+    </div>
+    <div class="scope-grid">
+      <div class="stat reveal">
+        <div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg></div>
+        <div class="num" data-target="2">0</div>
+        <div class="name">Starburst</div>
+        <div class="desc">clusters supported</div>
+        <div class="stat-bar"><i data-w="15"></i></div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg></div>
+        <div class="num" data-target="10">0</div>
+        <div class="name">Redshift Prod</div>
+        <div class="desc">production clusters</div>
+        <div class="stat-bar"><i data-w="77"></i></div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10 2v6.5L5.5 18A2 2 0 0 0 7.3 21h9.4a2 2 0 0 0 1.8-2.9L14 8.5V2"/><path d="M7 15h10"/></svg></div>
+        <div class="num" data-target="13">0</div>
+        <div class="name">Redshift Test</div>
+        <div class="desc">test clusters</div>
+        <div class="stat-bar"><i data-w="100"></i></div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13A4 4 0 0 1 16 11"/></svg></div>
+        <div class="num" data-target="3">0</div>
+        <div class="name">Total Offshore</div>
+        <div class="desc">resources</div>
+        <div class="stat-bar"><i data-w="23"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── SERVICE COVERAGE ───────── -->
+<section class="coverage" id="coverage">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Service Coverage</span>
+      <h2 class="sec-title">What the Team Covers</h2>
+      <p class="sec-sub">End-to-end ownership across platform, identity, network, security, and cluster operations. Select a domain to expand.</p>
+    </div>
+    <div class="cov-list">
+      <div class="cov reveal">
+        <button class="cov-btn" aria-expanded="false">
+          <span class="cov-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+          <span class="cov-titles"><span class="cov-name">Platform Ops</span><span class="cov-tag">Cluster operations</span></span>
+          <span class="cov-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="cov-panel"><div class="cov-panel-inner"><span class="hl">Starburst &amp; Redshift cluster support</span> — day-to-day operation, health, and upkeep of both platforms.</div></div>
+      </div>
+      <div class="cov reveal">
+        <button class="cov-btn" aria-expanded="false">
+          <span class="cov-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.6 7.6a5 5 0 1 1-7.07 7.07 5 5 0 0 1 7.07-7.07zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"/></svg></span>
+          <span class="cov-titles"><span class="cov-name">AWS IAM</span><span class="cov-tag">Identity &amp; access</span></span>
+          <span class="cov-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="cov-panel"><div class="cov-panel-inner"><span class="hl">Roles, access policies &amp; permissions</span> — provisioning and governing identity across the AWS estate.</div></div>
+      </div>
+      <div class="cov reveal">
+        <button class="cov-btn" aria-expanded="false">
+          <span class="cov-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6.5 7.5l3.5 3M17.5 7.5L14 10.5M12 15v3"/></svg></span>
+          <span class="cov-titles"><span class="cov-name">AWS VPC</span><span class="cov-tag">Networking</span></span>
+          <span class="cov-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="cov-panel"><div class="cov-panel-inner"><span class="hl">Network dependencies &amp; connectivity</span> — ensuring reliable routing and reachability between services.</div></div>
+      </div>
+      <div class="cov reveal">
+        <button class="cov-btn" aria-expanded="false">
+          <span class="cov-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v5c0 5-3.4 8.5-8 11-4.6-2.5-8-6-8-11V6z"/></svg></span>
+          <span class="cov-titles"><span class="cov-name">Security Group</span><span class="cov-tag">Traffic control</span></span>
+          <span class="cov-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="cov-panel"><div class="cov-panel-inner"><span class="hl">Ingress, egress &amp; rule validation</span> — defining and verifying inbound/outbound rules to keep traffic controlled.</div></div>
+      </div>
+      <div class="cov reveal">
+        <button class="cov-btn" aria-expanded="false">
+          <span class="cov-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg></span>
+          <span class="cov-titles"><span class="cov-name">Redshift Cluster</span><span class="cov-tag">Lifecycle management</span></span>
+          <span class="cov-plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+        </button>
+        <div class="cov-panel"><div class="cov-panel-inner"><span class="hl">Cluster provisioning, monitoring and maintenance</span> — full lifecycle ownership of Redshift clusters.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── PLATFORM ECOSYSTEM ───────── -->
+<section class="eco" id="ecosystem">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Platform Ecosystem</span>
+      <h2 class="sec-title">Connections &amp; Tooling</h2>
+      <p class="sec-sub">The data sources the platform connects to, and the on-prem tools used to operate and consume it.</p>
+    </div>
+    <div class="reveal">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="sources" role="tab">Data Source Connections</button>
+        <button class="tab" data-tab="tools" role="tab">On-Prem Tools</button>
+      </div>
+
+      <div class="tab-panel active" data-panel="sources">
+        <div class="nodes">
+          <div class="node tip" data-tip="Object storage data source"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7M3 12l9 4 9-4"/></svg></div><div><div class="node-name">S3</div><div class="node-kind">Object storage</div></div></div>
+          <div class="node tip" data-tip="Relational database service"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/></svg></div><div><div class="node-name">RDS</div><div class="node-kind">Relational DB</div></div></div>
+          <div class="node tip" data-tip="Data warehouse"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 11v8c0 1.66 3.58 3 8 3s8-1.34 8-3v-8"/></svg></div><div><div class="node-name">Redshift</div><div class="node-kind">Warehouse</div></div></div>
+          <div class="node tip" data-tip="ETL & cataloging"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.2-.6-.6-2.2z"/></svg></div><div><div class="node-name">Glue</div><div class="node-kind">ETL service</div></div></div>
+          <div class="node tip" data-tip="Open-source relational DB"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg></div><div><div class="node-name">Postgres</div><div class="node-kind">Relational DB</div></div></div>
+        </div>
+        <div class="eco-hub"><span class="pill"><b>5</b> data sources</span> connected into the Starburst &amp; Redshift platform.</div>
+      </div>
+
+      <div class="tab-panel" data-panel="tools">
+        <div class="nodes">
+          <div class="node tool tip" data-tip="SQL client & DB admin"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg></div><div><div class="node-name">DBeaver</div><div class="node-kind">SQL client</div></div></div>
+          <div class="node tool tip" data-tip="Analytics & visualization"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div><div><div class="node-name">Qlik Sense</div><div class="node-kind">Analytics</div></div></div>
+          <div class="node tool tip" data-tip="Business intelligence"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/></svg></div><div><div class="node-name">Power BI</div><div class="node-kind">BI platform</div></div></div>
+          <div class="node tool tip" data-tip="Data quality & integration"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7c0-1.66 3.6-3 8-3s8 1.34 8 3-3.6 3-8 3-8-1.34-8-3z"/><path d="M4 7v10c0 1.66 3.6 3 8 3s8-1.34 8-3V7"/><path d="M9 14l2 2 4-4"/></svg></div><div><div class="node-name">Dataflux</div><div class="node-kind">Data quality</div></div></div>
+          <div class="node tool tip" data-tip="Cloud BI dashboards"><div class="node-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M7 12l3-3 2 2 4-4"/></svg></div><div><div class="node-name">QuickSight</div><div class="node-kind">Cloud BI</div></div></div>
+        </div>
+        <div class="eco-hub"><span class="pill"><b>5</b> on-prem tools</span> used to operate, query and visualize the platform.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── WORKLOAD DRIVERS ───────── -->
+<section class="work" id="workload">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Day-to-Day Workload Drivers</span>
+      <h2 class="sec-title">Where the Effort Goes</h2>
+      <p class="sec-sub">The recurring operational flow that keeps the platform healthy and responsive.</p>
+    </div>
+    <div class="timeline">
+      <div class="step reveal">
+        <div class="step-node"><span class="step-no">1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg></div>
+        <div class="step-card"><div class="step-title">Incident monitoring &amp; recovery</div></div>
+      </div>
+      <div class="step reveal">
+        <div class="step-node"><span class="step-no">2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg></div>
+        <div class="step-card"><div class="step-title">Ticket triage &amp; resolution</div></div>
+      </div>
+      <div class="step reveal">
+        <div class="step-node"><span class="step-no">3</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="step-card"><div class="step-title">DNR execution &amp; closure</div></div>
+      </div>
+      <div class="step reveal">
+        <div class="step-node"><span class="step-no">4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
+        <div class="step-card"><div class="step-title">Change request, catalog task &amp; Universal request support</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── TECHNOLOGY STACK ───────── -->
+<section class="stack" id="stack">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-label">Technology Stack</span>
+      <h2 class="sec-title">Tools of the Trade</h2>
+      <p class="sec-sub">The languages, platforms, and operational tooling that power the support function.</p>
+    </div>
+    <div class="stack-grid">
+      <div class="tcard reveal" style="--cap:linear-gradient(90deg,#A855F7,#C084FC);--cicon:#C084FC">
+        <div class="tcard-head"><span class="tcard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h4a3 3 0 0 1 3 3v4H9a3 3 0 0 0-3 3v2H4a2 2 0 0 1-2-2V8a3 3 0 0 1 3-3h3z"/><path d="M16 21h-4a3 3 0 0 1-3-3v-4h6a3 3 0 0 0 3-3V9h2a2 2 0 0 1 2 2v5a3 3 0 0 1-3 3h-3z"/></svg></span><span><span class="tcard-cat">Backend</span><span class="tcard-h">Languages</span></span></div>
+        <div class="chips"><span class="chip">Python</span></div>
+      </div>
+      <div class="tcard reveal" style="--cap:linear-gradient(90deg,#F59E0B,#FBBF24);--cicon:#FBBF24">
+        <div class="tcard-head"><span class="tcard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/></svg></span><span><span class="tcard-cat">BI</span><span class="tcard-h">Reporting</span></span></div>
+        <div class="chips"><span class="chip">Power BI</span></div>
+      </div>
+      <div class="tcard reveal" style="--cap:linear-gradient(90deg,#FF6B3D,#FF8C5A);--cicon:#FF8C5A">
+        <div class="tcard-head"><span class="tcard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg></span><span><span class="tcard-cat">Database</span><span class="tcard-h">Data Platforms</span></span></div>
+        <div class="chips"><span class="chip">Redshift</span><span class="chip">Starburst</span></div>
+      </div>
+      <div class="tcard reveal" style="--cap:linear-gradient(90deg,#22D3EE,#38BDF8);--cicon:#38BDF8">
+        <div class="tcard-head"><span class="tcard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6-2A4.5 4.5 0 0 0 6.5 19z"/></svg></span><span><span class="tcard-cat">Cloud &amp; Infra</span><span class="tcard-h">Foundation</span></span></div>
+        <div class="chips"><span class="chip">AWS</span><span class="chip">Terraform</span><span class="chip">OpenTofu</span></div>
+      </div>
+      <div class="tcard reveal" style="--cap:linear-gradient(90deg,#34D399,#10B981);--cicon:#34D399">
+        <div class="tcard-head"><span class="tcard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M9 6h6M6 9v6"/><path d="M15 6a9 9 0 0 1-9 9"/></svg></span><span><span class="tcard-cat">DevOps</span><span class="tcard-h">Delivery</span></span></div>
+        <div class="chips"><span class="chip">GitLab CI/CD</span><span class="chip">Scalr</span></div>
+      </div>
+      <div class="tcard reveal" style="--cap:linear-gradient(90deg,#A855F7,#FF6B3D);--cicon:#C084FC">
+        <div class="tcard-head"><span class="tcard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></span><span><span class="tcard-cat">Support Focus</span><span class="tcard-h">Mandate</span></span></div>
+        <div class="chips"><span class="chip">Operations</span><span class="chip">Access</span><span class="chip">Infrastructure</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── SUPPORT CHARTER ───────── -->
+<section class="charter" id="charter">
+  <div class="wrap">
+    <div class="charter-card reveal">
+      <span class="q-mark">&ldquo;</span>
+      <div class="charter-label">Support Charter</div>
+      <p class="charter-text">Provide platform support for <b>Starburst and Redshift</b> environments, covering clusters, AWS services, access management, deployments, monitoring, and incident resolution.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── FOOTER ───────── -->
+<footer>
+  <div class="wrap foot">
+    <div class="foot-brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg>
+      </span>
+      <div class="foot-title">DIVS Starburst &amp; Redshift Support<small>Platform operations · access · infrastructure</small></div>
+    </div>
+    <div class="foot-meta">Executive Overview</div>
+    <a href="#top" class="to-top">Back to top <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Scroll progress bar ── */
+  var bar = document.getElementById('progress');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* ── Reveal on scroll (staggered) ── */
+  var revs = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !reduce){
+    var ro = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          var sibs = Array.prototype.slice.call(e.target.parentNode.children).filter(function(n){return n.classList.contains('reveal');});
+          var i = sibs.indexOf(e.target);
+          e.target.style.transitionDelay = Math.max(0, i) * 80 + 'ms';
+          e.target.classList.add('visible');
+          ro.unobserve(e.target);
+        }
+      });
+    }, {threshold:0.12});
+    revs.forEach(function(el){ ro.observe(el); });
+  } else {
+    revs.forEach(function(el){ el.classList.add('visible'); });
+  }
+
+  /* ── Animated counters ── */
+  function animateCount(el){
+    var target = parseFloat(el.getAttribute('data-target')) || 0;
+    var suffix = el.getAttribute('data-suffix') || '';
+    if (reduce){ el.textContent = target + suffix; return; }
+    var dur = 1500, start = null;
+    function tick(ts){
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = target + suffix;
+    }
+    requestAnimationFrame(tick);
+  }
+  var counters = document.querySelectorAll('[data-target]');
+  if ('IntersectionObserver' in window){
+    var co = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting){ animateCount(e.target); co.unobserve(e.target); } });
+    }, {threshold:0.5});
+    counters.forEach(function(el){ co.observe(el); });
+  } else { counters.forEach(animateCount); }
+
+  /* ── Scope proportional bars ── */
+  var bars = document.querySelectorAll('.stat-bar i');
+  if ('IntersectionObserver' in window && !reduce){
+    var bo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.style.width = e.target.getAttribute('data-w') + '%'; bo.unobserve(e.target); }
+      });
+    }, {threshold:0.5});
+    bars.forEach(function(el){ bo.observe(el); });
+  } else {
+    bars.forEach(function(el){ el.style.width = el.getAttribute('data-w') + '%'; });
+  }
+
+  /* ── Service coverage accordion ── */
+  document.querySelectorAll('.cov-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var cov = btn.closest('.cov');
+      var panel = cov.querySelector('.cov-panel');
+      var open = cov.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      panel.style.maxHeight = open ? panel.scrollHeight + 'px' : '0px';
+    });
+  });
+
+  /* ── Ecosystem tabs ── */
+  document.querySelectorAll('.tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var key = tab.getAttribute('data-tab');
+      document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active', t === tab); });
+      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-panel') === key); });
+    });
+  });
+
+  /* ── Scroll-spy nav ── */
+  var spyLinks = document.querySelectorAll('.nav-links a');
+  var sections = [];
+  spyLinks.forEach(function(a){
+    var s = document.querySelector(a.getAttribute('href'));
+    if (s) sections.push({a:a, s:s});
+  });
+  if ('IntersectionObserver' in window && sections.length){
+    var so = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          spyLinks.forEach(function(l){ l.classList.remove('active'); });
+          var match = sections.filter(function(x){ return x.s === e.target; })[0];
+          if (match) match.a.classList.add('active');
+        }
+      });
+    }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+    sections.forEach(function(x){ so.observe(x.s); });
+  }
+
+  /* ── Hero particle field ── */
+  var canvas = document.getElementById('particles');
+  if (canvas && !reduce){
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W, H, pts = [];
+    var COLORS = ['168,85,247', '255,107,61', '34,211,238'];
+    function resize(){
+      var hero = canvas.parentElement;
+      W = hero.offsetWidth; H = hero.offsetHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      var count = Math.min(70, Math.floor(W * H / 19000));
+      pts = [];
+      for (var i=0;i<count;i++){
+        pts.push({
+          x:Math.random()*W, y:Math.random()*H,
+          vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.25,
+          r:Math.random()*1.8+.6,
+          c:COLORS[Math.floor(Math.random()*COLORS.length)]
+        });
+      }
+    }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      for (var i=0;i<pts.length;i++){
+        var p = pts[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x<0||p.x>W) p.vx*=-1;
+        if (p.y<0||p.y>H) p.vy*=-1;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle='rgba('+p.c+',.7)';
+        ctx.fill();
+        for (var j=i+1;j<pts.length;j++){
+          var q = pts[j], dx=p.x-q.x, dy=p.y-q.y, d=Math.sqrt(dx*dx+dy*dy);
+          if (d<120){
+            ctx.beginPath();
+            ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+            ctx.strokeStyle='rgba('+p.c+','+(0.12*(1-d/120))+')';
+            ctx.lineWidth=1; ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    resize();
+    draw();
+    var rt;
+    window.addEventListener('resize', function(){ clearTimeout(rt); rt=setTimeout(resize,180); });
+  }
+})();
+</script>
+</body>
+</html>
