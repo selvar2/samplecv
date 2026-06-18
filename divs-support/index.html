@@ -74,11 +74,16 @@
   .brand-name small{display:block;font-family:var(--font-body);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
   .nav-links{display:flex;gap:4px}
   .nav-links a{
-    text-decoration:none;color:var(--muted);font-size:13px;font-weight:500;
-    padding:7px 13px;border-radius:9px;transition:color .2s,background .2s;
+    position:relative;text-decoration:none;color:var(--muted);font-size:13px;font-weight:500;
+    padding:7px 13px;border-radius:9px;transition:color .25s,background .25s,transform .25s;
   }
-  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,.05)}
+  .nav-links a::after{content:'';position:absolute;left:13px;right:13px;bottom:3px;height:2px;border-radius:2px;
+    background:var(--grad);box-shadow:0 0 8px rgba(168,85,247,.55);
+    transform:scaleX(0);transform-origin:center;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,.05);transform:translateY(-1px);text-shadow:0 0 12px rgba(168,85,247,.35)}
+  .nav-links a:hover::after{transform:scaleX(1)}
   .nav-links a.active{color:var(--text);background:var(--grad-soft)}
+  .nav-links a.active::after{transform:scaleX(1)}
   .status-pill{
     display:inline-flex;align-items:center;gap:8px;
     border:1px solid var(--star-bd);background:rgba(168,85,247,.1);
